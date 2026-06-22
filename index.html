@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Rapid Red — Auction Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#ddd;min-height:100vh}
+.top{background:#111;border-bottom:2px solid #CC0000;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-txt .main{font-size:14px;font-weight:600;color:#fff;letter-spacing:.03em}
+.logo-txt .main span{color:#CC0000}
+.logo-txt .sub{font-size:8px;letter-spacing:.14em;color:#555;text-transform:uppercase}
+.upills{display:flex;gap:4px}
+.up{font-size:11px;padding:4px 11px;border-radius:20px;border:1px solid #2a2a2a;cursor:pointer;background:transparent;color:#666}
+.up.active{background:#CC0000;color:#fff;border-color:#CC0000}
+.layout{display:flex;min-height:calc(100vh - 52px)}
+.sb{background:#0e0e0e;border-right:1px solid #1a1a1a;width:180px;flex-shrink:0;padding:12px 8px}
+@media(max-width:600px){.sb{display:none}}
+.sbl{font-size:9px;color:#3a3a3a;letter-spacing:.1em;text-transform:uppercase;margin:0 8px 6px;display:block}
+.si{display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:#555;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left}
+.si:hover{background:#161616;color:#999}
+.si.on{background:#161616;color:#eee}
+.nbg{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:8px}
+.ng-r{background:#2a0505;color:#CC0000}
+.ng-y{background:#1f1500;color:#c8920e}
+.ng-g{background:#0a1a06;color:#5a8a28}
+.main{flex:1;overflow-y:auto;min-width:0}
+.bnr{padding:7px 14px;font-size:11px;border-bottom:1px solid #191919;display:flex;align-items:center;gap:5px}
+.bnr.parsa{background:#1a0303;color:#CC0000}
+.bnr.fardin{background:#08081a;color:#7777cc}
+.bnr.nourbe{background:#061206;color:#4a8a4a}
+.inner{padding:12px 14px}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:11px;gap:8px;flex-wrap:wrap}
+.ptitle{font-size:14px;font-weight:600;color:#ddd}
+.psub{font-size:10px;color:#444;margin-top:2px}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #222;cursor:pointer;background:transparent;color:#555}
+.pill.on{background:#CC0000;color:#fff;border-color:#CC0000}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:11px}
+@media(min-width:500px){.stats{grid-template-columns:repeat(4,1fr)}}
+.sc{background:#111;border:1px solid #1e1e1e;border-radius:7px;padding:9px 11px}
+.scl{font-size:10px;color:#3a3a3a;margin-bottom:3px}
+.scv{font-size:17px;font-weight:600;color:#ddd}
+.cards{display:grid;gap:7px}
+.card{background:#141414;border:1px solid #1e1e1e;border-radius:9px;overflow:hidden}
+.acc{height:2px}
+.a-g{background:#5a8a28}.a-y{background:#c8920e}.a-r{background:#CC0000}.a-b{background:#2a6aaa}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 12px 0;gap:8px}
+.cimg-wrap{height:90px;margin:7px 12px;border-radius:6px;background:#0a0a0a;overflow:hidden}
+.cimg-wrap img{width:100%;height:100%;object-fit:cover}
+.cimg-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#222;font-size:11px}
+.cname{font-size:13px;font-weight:600;color:#ddd}
+.cmeta{font-size:10px;color:#3a3a3a;margin-top:2px}
+.tags{display:flex;gap:3px;flex-wrap:wrap;padding:7px 12px}
+.tg{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500}
+.tg-r{background:#1f0303;color:#CC0000}
+.tg-y{background:#1a1000;color:#c8920e}
+.tg-g{background:#081506;color:#5a8a28}
+.tg-d{background:#181818;color:#555}
+.tg-b{background:#041020;color:#2a7acc}
+.nums{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #1a1a1a;padding:8px 12px;gap:3px}
+.ni{text-align:center}
+.nl{font-size:9px;color:#333}
+.nv{font-size:12px;font-weight:500;color:#bbb;margin-top:2px}
+.nv.g{color:#5a8a28}.nv.y{color:#c8920e}.nv.r{color:#CC0000}
+.links{display:flex;gap:5px;padding:7px 12px;border-top:1px solid #191919}
+.lb{font-size:10px;padding:3px 9px;border:1px solid #222;border-radius:5px;background:#111;cursor:pointer;color:#4a7aaa;text-decoration:none;display:inline-flex;align-items:center;gap:3px}
+.fbar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:#0e0e0e;border-top:1px solid #191919;flex-wrap:wrap}
+.fav{width:22px;height:22px;border-radius:50%;background:#0f0f22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#7777cc;flex-shrink:0}
+.sbtn{font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid #222;cursor:pointer;background:#111;color:#555}
+.sbtn.sh{background:#1f0303;color:#CC0000;border-color:#881010}
+.sbtn.sm{background:#1a1000;color:#c8920e;border-color:#7a5000}
+.sbtn.ss{background:#081506;color:#5a8a28;border-color:#2a5a10}
+.ninp{flex:1;font-size:11px;padding:4px 8px;border:1px solid #222;border-radius:5px;background:#111;color:#bbb;min-width:0}
+.ninp::placeholder{color:#333}
+.aibtn{font-size:11px;padding:3px 9px;border:1px solid #881010;border-radius:5px;background:transparent;cursor:pointer;color:#CC0000;white-space:nowrap}
+.aibox{margin:7px 12px;padding:8px 10px;background:#0e0e0e;border-radius:5px;font-size:12px;color:#777;border-left:2px solid #CC0000;display:none;line-height:1.6}
+.ai-tag{display:inline-flex;align-items:center;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500}
+.mob-nav{display:none;position:sticky;bottom:0;background:#111;border-top:1px solid #1a1a1a;padding:8px;gap:4px;justify-content:center;flex-wrap:wrap}
+@media(max-width:600px){.mob-nav{display:flex}}
+.mn-btn{font-size:10px;padding:5px 12px;border-radius:20px;border:1px solid #222;cursor:pointer;background:transparent;color:#666}
+.mn-btn.on{background:#CC0000;color:#fff;border-color:#CC0000}
+.empty-state{text-align:center;padding:3rem 1rem;color:#2a2a2a}
+.empty-state svg{margin-bottom:10px;opacity:.3}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">
+    <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
+      <path d="M5 55C12 38 28 28 48 27C64 26 76 32 78 42" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M10 56C20 42 38 33 58 31C70 30 78 36 80 46" stroke="#CC0000" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M5 60C18 48 38 40 60 38C72 37 78 42 80 52" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="65" cy="55" r="13" stroke="#fff" stroke-width="2" fill="none"/>
+      <path d="M65 43L63 47L59 47L62 50L61 54L65 52L69 54L68 50L71 47L67 47Z" fill="#CC0000"/>
+    </svg>
+    <div class="logo-txt">
+      <div class="main">RAPID <span>RED</span></div>
+      <div class="sub">Global Canada Inc.</div>
+    </div>
+  </div>
+  <div class="upills">
+    <button class="up active" onclick="sU('parsa',this)">Parsa</button>
+    <button class="up" onclick="sU('fardin',this)">Fardin</button>
+    <button class="up" onclick="sU('nourbe',this)">Nourbe</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sb">
+    <div style="margin-bottom:14px">
+      <span class="sbl">Auction Days</span>
+      <button class="si on" data-day="tue" onclick="sD('tue',this)">📅 Tue Jun 23 <span class="nbg ng-r">100</span></button>
+      <button class="si" data-day="wed" onclick="sD('wed',this)">📅 Wed Jun 24 <span class="nbg ng-y">18</span></button>
+      <button class="si" data-day="thu" onclick="sD('thu',this)">📅 Thu Jun 25 <span class="nbg ng-g">7</span></button>
+    </div>
+    <div style="margin-bottom:14px">
+      <span class="sbl">Views</span>
+      <button class="si on" id="nv-inv" onclick="sV('inv',this)">🚗 Inventory</button>
+      <button class="si" id="nv-res" onclick="sV('res',this)">🔨 Auction Results</button>
+      <button class="si" id="nv-his" onclick="sV('his',this)">📋 History</button>
+    </div>
+    <div>
+      <span class="sbl">Filter</span>
+      <button class="si" onclick="sF('BUY')">✓ BUY <span class="nbg ng-g">18</span></button>
+      <button class="si" onclick="sF('REVIEW')">👁 REVIEW <span class="nbg ng-y">31</span></button>
+      <button class="si" onclick="sF('SKIP')">✕ SKIP <span class="nbg" style="background:#1a1a1a;color:#444">6</span></button>
+    </div>
+  </div>
+
+  <div class="main" id="main"></div>
+</div>
+
+<div class="mob-nav">
+  <button class="mn-btn on" onclick="sV('inv',this)">🚗 Inventory</button>
+  <button class="mn-btn" onclick="sV('res',this)">🔨 Results</button>
+  <button class="mn-btn" onclick="sV('his',this)">📋 History</button>
+  <button class="mn-btn" onclick="sF('BUY')" style="color:#5a8a28;border-color:#2a5a10">BUY</button>
+  <button class="mn-btn" onclick="sF('REVIEW')" style="color:#c8920e;border-color:#7a5000">REVIEW</button>
+</div>
+
+<script>
+const ANTHROPIC_API_KEY = 'YOUR_API_KEY_HERE';
+
+let rU='parsa',rD='tue',rV='inv',rF='all';
+
+const CARS=[
+  {id:1,lot:'53257536',yr:2026,mk:'HONDA',md:'CIVIC SI',dmg:'WATER/FLOOD',dmg2:'',cs:'HIGH',fs:'Medium',ret:37525,rep:7505,dp:20,lim:35,ov:'NO',bid:24391,pft:5629,odo:4481,clr:'WHITE',keys:'YES',run:'Run and Drive',loc:'ON - LONDON',ai:'BUY',note:'',url:'https://www.copart.ca/lot/53257536',at:'https://www.autotrader.ca/cars/honda/civic/?yRng=2026,2026'},
+  {id:2,lot:'91771015',yr:2025,mk:'KIA',md:'SELTOS EX',dmg:'FRONT END',dmg2:'UNDERCARRIAGE',cs:'MEDIUM',fs:'Medium',ret:32441,rep:6488,dp:20,lim:35,ov:'NO',bid:21087,pft:4866,odo:4767,clr:'BLACK',keys:'YES',run:'Run and Drive',loc:'ON - TORONTO',ai:'BUY',note:'',url:'https://www.copart.ca/lot/91771015',at:'https://www.autotrader.ca/cars/kia/seltos/?yRng=2025,2025'},
+  {id:3,lot:'79891115',yr:2025,mk:'TOYOTA',md:'CAMRY LE',dmg:'REAR END',dmg2:'MINOR DENT',cs:'MEDIUM',fs:'High',ret:44282,rep:15499,dp:35,lim:50,ov:'NO',bid:22141,pft:6642,odo:7739,clr:'BLACK',keys:'NO',run:'Stationary',loc:'ON - COOKSTOWN',ai:'REVIEW',note:'No keys — check engine',url:'https://www.copart.ca/lot/79891115',at:'https://www.autotrader.ca/cars/toyota/camry/?yRng=2025,2025'},
+  {id:4,lot:'51335726',yr:2020,mk:'HONDA',md:'PILOT LX',dmg:'SIDE',dmg2:'REAR END',cs:'MEDIUM',fs:'Medium',ret:34444,rep:6889,dp:20,lim:35,ov:'NO',bid:22389,pft:5166,odo:67291,clr:'GRAY',keys:'YES',run:'Run and Drive',loc:'ON - TORONTO',ai:'BUY',note:'',url:'https://www.copart.ca/lot/51335726',at:'https://www.autotrader.ca/cars/honda/pilot/?yRng=2020,2020'},
+  {id:5,lot:'53882246',yr:2023,mk:'TOYOTA',md:'RAV4 HYBRID XLE',dmg:'SIDE',dmg2:'VANDALISM',cs:'MEDIUM',fs:'Medium',ret:37811,rep:7562,dp:20,lim:50,ov:'NO',bid:24577,pft:5672,odo:51148,clr:'BLACK',keys:'YES',run:'Run and Drive',loc:'ON - TORONTO',ai:'BUY',note:'',url:'https://www.copart.ca/lot/53882246',at:'https://www.autotrader.ca/cars/toyota/rav4/?yRng=2023,2023'},
+  {id:6,lot:'47720426',yr:2024,mk:'HYUNDAI',md:'SONATA N-LINE',dmg:'FRONT END',dmg2:'MINOR DENT',cs:'MEDIUM',fs:'High',ret:34121,rep:11942,dp:35,lim:35,ov:'NO',bid:17061,pft:5118,odo:20456,clr:'RED',keys:'YES',run:'Stationary',loc:'ON - COOKSTOWN',ai:'REVIEW',note:'Stationary — check suspension',url:'https://www.copart.ca/lot/47720426',at:'https://www.autotrader.ca/cars/hyundai/sonata/?yRng=2024,2024'},
+  {id:7,lot:'53653406',yr:2016,mk:'HYUNDAI',md:'SONATA SE',dmg:'FRONT END',dmg2:'UNDERCARRIAGE',cs:'MEDIUM',fs:'Medium',ret:11423,rep:20729,dp:181,lim:35,ov:'YES',bid:0,pft:-9307,odo:126617,clr:'BLUE',keys:'YES',run:'Run and Drive',loc:'ON - TORONTO',ai:'SKIP',note:'',url:'https://www.copart.ca/lot/53653406',at:'https://www.autotrader.ca/cars/hyundai/sonata/?yRng=2016,2016'},
+];
+const CD={};CARS.forEach(c=>CD[c.id]=c);
+
+function sU(u,b){rU=u;document.querySelectorAll('.up').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()}
+function sD(d,b){rD=d;document.querySelectorAll('[data-day]').forEach(x=>x.classList.remove('on'));b.classList.add('on');render()}
+function sV(v,b){rV=v;['inv','res','his'].forEach(x=>document.getElementById('nv-'+x)?.classList.remove('on'));document.getElementById('nv-'+v)?.classList.add('on');document.querySelectorAll('.mob-nav .mn-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');render()}
+function sF(f){rF=rF===f?'all':f;render()}
+
+function aiTag(ai){
+  const m={BUY:'tg-g',REVIEW:'tg-y',SKIP:'tg-r','NEEDS DATA':'tg-b'};
+  return `<span class="ai-tag ${m[ai]||'tg-d'}">${ai}</span>`;
+}
+
+function card(c){
+  const ov=c.ov==='YES';
+  const acc=c.ai==='BUY'?'a-g':c.ai==='REVIEW'?'a-y':c.ai==='SKIP'?'a-r':'a-b';
+  const rc=c.rep>c.ret?'r':ov?'r':c.dp>c.lim*.75?'y':'g';
+  const dc=ov?'r':c.dp>c.lim*.7?'y':'g';
+  const pc=c.pft>0?'g':'r';
+
+  const sevEdit=(rU==='parsa'||rU==='fardin')?`
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="sbtn ${c.fs==='High'?'sh':''}" onclick="setSev(${c.id},'High')">High</button>
+      <button class="sbtn ${c.fs==='Medium'?'sm':''}" onclick="setSev(${c.id},'Medium')">Medium</button>
+      <button class="sbtn ${c.fs==='Small'?'ss':''}" onclick="setSev(${c.id},'Small')">Small</button>
+    </div>
+    <input class="ninp" type="text" placeholder="Notes..." value="${c.note.replace(/"/g,'&quot;')}" oninput="setNote(${c.id},this.value)"/>`:
+    `<span style="font-size:11px;color:#444">${c.fs}${c.note?' — '+c.note:''}</span>`;
+
+  const aib=rU==='parsa'?`<button class="aibtn" onclick="askAI(${c.id})">✦ Ask AI</button>`:'';
+
+  const fin=rU!=='fardin'?`<div class="nums">
+    <div class="ni"><div class="nl">Retail</div><div class="nv">$${c.ret.toLocaleString()}</div></div>
+    <div class="ni"><div class="nl">Repair</div><div class="nv ${rc}">$${c.rep.toLocaleString()}</div></div>
+    <div class="ni"><div class="nl">Damage</div><div class="nv ${dc}">${c.dp}%</div></div>
+    <div class="ni"><div class="nl">Max bid</div><div class="nv g">${c.bid>0?'$'+c.bid.toLocaleString():'—'}</div></div>
+    <div class="ni"><div class="nl">Profit</div><div class="nv ${pc}">$${c.pft.toLocaleString()}</div></div>
+  </div>`:`<div style="padding:7px 12px;font-size:10px;color:#3a3a3a">${c.odo.toLocaleString()} km · ${c.clr} · ${c.run}</div>`;
+
+  const dmgClr=c.dp>c.lim?'tg-r':c.dp>c.lim*.6?'tg-y':'tg-g';
+  const fsClr=c.fs==='High'?'tg-r':c.fs==='Small'?'tg-g':'tg-y';
+
+  return `<div class="card" id="card-${c.id}">
+    <div class="acc ${acc}"></div>
+    <div class="ctop">
+      <div>
+        <div class="cname">${c.yr} ${c.mk} ${c.md}</div>
+        <div class="cmeta">Lot #${c.lot} · ${c.loc}</div>
+      </div>
+      ${aiTag(c.ai)}
+    </div>
+    <div class="cimg-wrap">
+      <img src="https://cs.copart.com/v1/AUTH_svc.pdoc00001/lpp/${new Date().getFullYear()}/${String(new Date().getMonth()+1).padStart(2,'0')}/d4/${c.lot}_ful.jpg"
+        alt="${c.yr} ${c.mk} ${c.md}"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="cimg-ph" style="display:none">🚗 ${c.yr} ${c.mk} ${c.md}</div>
+    </div>
+    <div class="tags">
+      <span class="tg tg-d">${c.mk}</span>
+      <span class="tg ${dmgClr}">${c.dmg}${c.dmg2?' + '+c.dmg2:''}</span>
+      <span class="tg ${fsClr}">Fardin: ${c.fs}</span>
+      ${c.run==='Stationary'?'<span class="tg tg-y">Stationary</span>':''}
+      ${c.keys==='NO'?'<span class="tg tg-r">No keys</span>':''}
+      ${ov?'<span class="tg tg-r">Over limit</span>':''}
+    </div>
+    ${fin}
+    <div class="links">
+      <a class="lb" href="${c.url}" target="_blank">↗ CoPart</a>
+      <a class="lb" href="${c.at}" target="_blank">↗ AutoTrader</a>
+    </div>
+    <div class="fbar">
+      <div class="fav">FA</div>
+      ${sevEdit}
+      ${aib}
+    </div>
+    <div class="aibox" id="ai-${c.id}"></div>
+  </div>`;
+}
+
+function banner(){
+  const m={parsa:'👑 Parsa — full access',fardin:'🔧 Fardin — severity + notes only',nourbe:'👁 Nourbe — read only'};
+  return `<div class="bnr ${rU}">${m[rU]}</div>`;
+}
+
+function render(){
+  const el=document.getElementById('main');
+  if(rV==='inv'){
+    const cars=CARS.filter(c=>rF==='all'||c.ai===rF);
+    const buy=cars.filter(c=>c.ai==='BUY').length;
+    const rev=cars.filter(c=>c.ai==='REVIEW').length;
+    const pool=cars.filter(c=>c.bid>0).reduce((a,c)=>a+c.bid,0);
+    const dl=rD==='tue'?'Tue Jun 23':rD==='wed'?'Wed Jun 24':'Thu Jun 25';
+    el.innerHTML=`${banner()}<div class="inner">
+      <div class="ph">
+        <div><div class="ptitle">${dl}, 2026</div><div class="psub">Ontario Auction · ${cars.length} vehicles</div></div>
+        <div class="pills">
+          <button class="pill ${rF==='all'?'on':''}" onclick="sF('all')">All</button>
+          <button class="pill ${rF==='BUY'?'on':''}" onclick="sF('BUY')">BUY</button>
+          <button class="pill ${rF==='REVIEW'?'on':''}" onclick="sF('REVIEW')">REVIEW</button>
+          <button class="pill ${rF==='SKIP'?'on':''}" onclick="sF('SKIP')">SKIP</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="sc"><div class="scl">Total</div><div class="scv">${cars.length}</div></div>
+        <div class="sc"><div class="scl">BUY</div><div class="scv" style="color:#5a8a28">${buy}</div></div>
+        <div class="sc"><div class="scl">REVIEW</div><div class="scv" style="color:#c8920e">${rev}</div></div>
+        <div class="sc"><div class="scl">Bid pool</div><div class="scv" style="color:#CC0000">$${Math.round(pool/1000)}K</div></div>
+      </div>
+      <div class="cards">${cars.map(card).join('')}</div>
+    </div>`;
+  } else if(rV==='res'){
+    el.innerHTML=`${banner()}<div class="inner">
+      <div class="ptitle" style="margin-bottom:14px">Auction Results</div>
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CC0000" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div style="color:#444;font-size:13px">Auction not live yet</div>
+        <div style="color:#2a2a2a;font-size:11px;margin-top:5px">Results will appear here during the live auction</div>
+      </div>
+    </div>`;
+  } else {
+    el.innerHTML=`${banner()}<div class="inner">
+      <div class="ptitle" style="margin-bottom:12px">Purchase History</div>
+      <div class="stats" style="margin-bottom:12px">
+        <div class="sc"><div class="scl">Won</div><div class="scv">2</div></div>
+        <div class="sc"><div class="scl">Passed</div><div class="scl">1</div></div>
+        <div class="sc"><div class="scl">Invested</div><div class="scv">$19K</div></div>
+        <div class="sc"><div class="scl">Profit</div><div class="scv" style="color:#5a8a28">$12.8K</div></div>
+      </div>
+      <div class="cards">
+        ${[{d:'Jun 12',v:'2021 Toyota Corolla LE',bid:10200,rep:6800,sold:21500,ok:true},{d:'Jun 5',v:'2020 Honda Civic EX',bid:8800,rep:5200,sold:17400,ok:true},{d:'May 29',v:'2019 Kia Optima LX',bid:0,rep:9800,sold:0,ok:false}].map(h=>{
+          const p=h.sold>0?h.sold-h.bid-h.rep:null;
+          return `<div class="card">
+            <div class="acc ${h.ok?'a-g':'a-r'}"></div>
+            <div class="ctop" style="padding-bottom:10px">
+              <div><div class="cname">${h.v}</div><div class="cmeta">${h.d} 2026</div></div>
+              <span class="ai-tag ${h.ok?'tg-g':'tg-d'}">${h.ok?'Won':'Passed'}</span>
+            </div>
+            ${rU!=='fardin'?`<div class="nums">
+              <div class="ni"><div class="nl">Bid</div><div class="nv">${h.bid?'$'+h.bid.toLocaleString():'—'}</div></div>
+              <div class="ni"><div class="nl">Repair</div><div class="nv y">$${h.rep.toLocaleString()}</div></div>
+              <div class="ni"><div class="nl">Sold</div><div class="nv">${h.sold?'$'+h.sold.toLocaleString():'—'}</div></div>
+              <div class="ni"><div class="nl">Profit</div><div class="nv ${p===null?'':p>=0?'g':'r'}">${p!==null?'$'+p.toLocaleString():'—'}</div></div>
+              <div class="ni"><div class="nl">Status</div><div class="nv ${h.ok?'g':'tg-d'}">${h.ok?'Won':'—'}</div></div>
+            </div>`:''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+}
+
+function setSev(id,sev){
+  const c=CD[id];c.fs=sev;
+  const p=sev==='High'?.35:sev==='Small'?.10:.20;
+  c.rep=Math.round(c.ret*p);
+  c.dp=Math.round(c.rep/c.ret*1000)/10;
+  c.ov=c.dp>c.lim?'YES':'NO';
+  c.bid=c.ret>0?Math.max(0,Math.round(c.ret-c.rep-c.ret*.15)):0;
+  c.pft=c.ret-c.rep-c.bid;
+  render();
+}
+function setNote(id,v){CD[id].note=v}
+
+async function askAI(id){
+  const c=CD[id];
+  const el=document.getElementById('ai-'+id);
+  el.style.display='block';el.textContent='Analyzing...';
+  const prompt=`Expert buying salvage cars at CoPart Canada for Rapid Red garage Toronto. ${c.yr} ${c.mk} ${c.md} Lot ${c.lot}. Damage: ${c.dmg}${c.dmg2?' + '+c.dmg2:''}. Fardin severity: ${c.fs}. Retail $${c.ret.toLocaleString()} Repair $${c.rep.toLocaleString()} Damage ${c.dp}% (limit ${c.lim}%). Max bid $${c.bid.toLocaleString()} Profit $${c.pft.toLocaleString()}. ${c.odo.toLocaleString()} km ${c.run} Keys:${c.keys}${c.note?' Fardin note:'+c.note:''}. In 3 sentences: should we bid? What must Fardin check?`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    el.textContent=d.content?.map(i=>i.text||'').join('')||'No response.';
+  }catch(e){el.textContent='Error: '+e.message;}
+}
+
+render();
+</script>
+</body>
+</html>
